@@ -1,9 +1,10 @@
 import { createContext, useReducer } from "react";
 import Question from "./Question";
+import questions from "../data/data";
 
 const initialState = {
   currentQuestionIndex: 0,
-  question: [],
+  question: questions,
 };
 
 const reducer = (state, action) => {
@@ -26,9 +27,11 @@ const Quiz = () => {
   return (
     <QuizProvider.Provider value={state.question}>
       <div className="quiz">
-        <div className="score">Question 1/8</div>
+        <div className="score">
+          Question {state.currentQuestionIndex + 1}/{questions.length}
+        </div>
         <div>
-          <Question questions={state.question} />
+          <Question />
         </div>
         <div
           className="next-button"

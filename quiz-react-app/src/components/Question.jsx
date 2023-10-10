@@ -3,12 +3,12 @@ import Answer from "./Answer";
 import { QuizProvider } from "./Quiz";
 
 const Question = () => {
-  const questions = useContext(QuizProvider);
+  const [questions] = useContext(QuizProvider);
 
   console.log("questions", questions);
   return (
     <div>
-      <div className="question">Text of the question</div>
+      <div className="question">{questions.question}</div>
       <div className="answers">
         <Answer />
         <Answer />
