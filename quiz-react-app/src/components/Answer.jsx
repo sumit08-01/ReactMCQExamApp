@@ -1,8 +1,13 @@
-const Answer = () => {
+
+
+
+
+const Answer = ({ answerText, onSelectAnswer, index }) => {
+  const letterMapping = ["A", "B", "C", "D"];
   return (
-    <div className="answer">
-      <div className="answer-letter">A</div>
-      <div className="answer-text">Text of the answer</div>
+    <div className="answer" onClick={() => onSelectAnswer(answerText)}>
+      <div className="answer-letter">{letterMapping[index]}</div>
+      <div className="answer-text">{answerText}</div>
     </div>
   );
 };
