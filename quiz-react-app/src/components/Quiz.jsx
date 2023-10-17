@@ -1,90 +1,48 @@
-import { createContext, useReducer } from "react";
-import Question from "./Question";
-import questions from "../data/data";
-import ShufflerAnswers from "../helper";
+import React, { useContext, useEffect, useReducer, useState } from 'react'
+import Question from './Question'
+import { QuizContext } from '../context/quiz';
 
-const initialState = {
-  currentQuestionIndex: 0,
-  question: questions,
-  showResult: false,
-  answers: ShufflerAnswers(questions[0]),
-  currentAnswer: ""
-};
 
-export const reducer = (state, action) => {
-  console.log(state.currentAnswer);
-  switch (action.type) {
-    case "SELECT_ANSWER": {
-      return {
-        ...state,
-        currentAnswer: action.payload
-      }
+export const Quiz = () => {
 
-    }
-    case "NEXT_QUESTION": {
-      const showResult = state.currentQuestionIndex === state.question.length - 1 // here if currentquestionIndex ===8 and length of the question array is === 8 then , showResult is update to TURE
-      const currentQuestionIndex = showResult ? state.currentQuestionIndex : state.currentQuestionIndex + 1;
-      const answers = showResult ? [] : ShufflerAnswers(state.question[currentQuestionIndex])
-      return {
-        ...state,
-        currentQuestionIndex,
-        showResult,
-        answers
-      };
-    }
-    case "RESTART": {
-      return initialState;
-      // return { //OR you can return like this, but this is not a good practice
-      // ...state,
-      // currentQuestionIndex: state.currentQuestionIndex = 0,
-      // showResult: false, 
-      // };
-    }
-    default: {
-      return state
-    }
-  }
-};
+    // const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+    const [state, dispatch] = useContext(QuizContext)
 
-export const QuizProvider = createContext();
-
-const Quiz = () => {
-  // const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [state, dispatch] = useReducer(reducer, initialState);
-  console.log("state", state);
-
-  return (
-
-    <QuizProvider.Provider value={state} >
-      <>
-        {state.showResult &&
-          <div className="results">
-            <div className="congratulations">Congratulations</div>
-            <div className="result-info">
-              <div>You have completed you Quiz</div>
-              <div>You've got 4 of {state.question.length}</div>
-            </div>
-            <div className="next-button" onClick={() => dispatch({ type: "RESTART" })}>Restart</div>
-          </div>}
-        {!state.showResult &&
-          <div className="quiz">
-            <div className="score">
-              Question {state.currentQuestionIndex + 1}/ {questions.length}
-            </div>
-            <div>
-              <Question />
-            </div>
-            <div
-              className="next-button"
-              onClick={() => dispatch({ type: "NEXT_QUESTION" })}
-            >
-              Next Question
-            </div>
-          </div>
+    const openApi = "https://opentdb.com/api.php?amount=10&category=12&difficulty=easy&type=multiple&encode=url3986";
+    useEffect(() => {
+        if (state.questions.length > 0) {
+            return
         }
-      </>
-    </QuizProvider.Provider>
-  );
-};
+        fetch(openApi).then((res) => res.json()).then((data) => {
+            dispatch({ type: "LOADED_QUESTIONS", payload: data.results })
+        })
+    }) // if we are not pass empty array then, it will render every state change
 
-export default Quiz;
+
+    return (
+        <div className='quiz'>
+            {state.showResults &&
+                <div className="results">
+                    <div className="congratulations">Congratulations</div>
+                    <div className="result-info">
+                        <div>You have completed you Quiz</div>
+                        <div>You've got {state.correctAnswerCount} of {state.questions.length}</div>
+                    </div>
+                    <div className="next-button" onClick={() => dispatch({ type: "RESTART" })}>Restart</div>
+                </div>}
+            {
+                !state.showResults && state.questions.length > 0 && (
+                    <div>
+                        <div className='score'>Question {state.currentQuestionIndex + 1}/ {state.questions.length}</div>
+                        <Question question={state} />
+                        <div className='next-button' onClick={() => dispatch({ type: "NEXT_QUESTION" })}>Next Question</div>
+                    </div>
+                )
+            }
+
+        </div>
+    )
+}
+
+
+//

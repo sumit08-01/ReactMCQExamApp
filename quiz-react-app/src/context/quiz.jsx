@@ -18,7 +18,6 @@ const initialState = {
 }
 
 const reducers = (state, action) => {
-    console.log("state and action", state, action);
     switch (action.type) {
         case "SELECT_ANSWER": {
             const correctAnswerCount = action.payload === state.questions[state.currentQuestionIndex].correctAnswer ? state.correctAnswerCount + 1 : state.correctAnswerCount;
@@ -51,7 +50,6 @@ const reducers = (state, action) => {
         }
         case "LOADED_QUESTIONS": {
             const normalizedQuestion = normalizedQuestions(action.payload)
-            console.log(normalizedQuestion);
             return {
                 ...state,
                 questions: normalizedQuestion,
@@ -66,7 +64,6 @@ const reducers = (state, action) => {
 
 export const QuizProvider = ({ children }) => {
     const state = useReducer(reducers, initialState)
-    console.log("state 2", state);
 
     return <QuizContext.Provider value={state}>{children}</QuizContext.Provider>
 }
